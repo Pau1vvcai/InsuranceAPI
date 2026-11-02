@@ -12,6 +12,8 @@ public record OrderResponse(
         String insuredName,
         Relationship relationship,
         BigDecimal premium,
+        BigDecimal coverageAmount,
+        Integer coverageDays,
         OrderStatus status,
         Instant createdAt
 ) {
@@ -26,6 +28,8 @@ public record OrderResponse(
                 order.getInsuredName(),
                 order.getRelationship(),
                 order.getPremium(),
+                order.getCoverageAmount(),
+                order.getCoverageDays(),
                 order.getStatus(),
                 order.getCreatedAt()
         );

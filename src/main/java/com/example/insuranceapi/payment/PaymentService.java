@@ -28,7 +28,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public PolicyResponse pay(String orderNo) {
+    public PaymentResult pay(String orderNo) {
         InsuranceOrder order = orderRepository
                 .findByOrderNo(orderNo)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -43,26 +43,26 @@ public class PaymentService {
                             "订单已支付，但未找到对应保单"
                     ));
 
-            return PolicyResponse.from(existingPolicy);
+            return new PaymentResult(PolicyResponse.from(existingPolicy), false);
         }
 
         order.markAsPaid();
 
         LocalDate effectiveDate = LocalDate.now();
         LocalDate expirationDate = effectiveDate.plusDays(
-                order.getProduct().getCoverageDays()
+                order.getCoverageDays()
         );
 
         Policy policy = new Policy(
                 generatePolicyNo(),
                 order,
-                order.getProduct().getCoverageAmount(),
+                order.getCoverageAmount(),
                 effectiveDate,
                 expirationDate
         );
 
         Policy savedPolicy = policyRepository.save(policy);
-        return PolicyResponse.from(savedPolicy);
+        return new PaymentResult(PolicyResponse.from(savedPolicy), true);
     }
 
     private String generatePolicyNo() {

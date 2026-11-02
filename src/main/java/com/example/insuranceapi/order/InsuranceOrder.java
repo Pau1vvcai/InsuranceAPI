@@ -2,6 +2,7 @@
 package com.example.insuranceapi.order;
 
 import com.example.insuranceapi.product.InsuranceProduct;
+import com.example.insuranceapi.common.InvalidOrderStateException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -49,6 +50,12 @@ public class InsuranceOrder {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal premium;
 
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal coverageAmount;
+
+    @Column(nullable = false)
+    private Integer coverageDays;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private OrderStatus status;
@@ -77,15 +84,17 @@ public class InsuranceOrder {
 
         // 下单时保存保费快照，避免产品以后调价影响历史订单。
         this.premium = product.getPremium();
+        this.coverageAmount = product.getCoverageAmount();
+        this.coverageDays = product.getCoverageDays();
         this.status = OrderStatus.PENDING_PAYMENT;
         this.createdAt = Instant.now();
     }
 
     public void markAsPaid() {
-    if (status != OrderStatus.PENDING_PAYMENT) {
-        throw new IllegalStateException("只有待支付订单才能支付");
-    }
+        if (status != OrderStatus.PENDING_PAYMENT) {
+            throw new InvalidOrderStateException("只有待支付订单才能支付");
+        }
 
-    this.status = OrderStatus.PAID;
-}
+        this.status = OrderStatus.PAID;
+    }
 }

@@ -19,10 +19,10 @@ public class PaymentController {
     public ResponseEntity<PolicyResponse> pay(
             @PathVariable String orderNo
     ) {
-        PolicyResponse response = paymentService.pay(orderNo);
+        PaymentResult result = paymentService.pay(orderNo);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+                .status(result.created() ? HttpStatus.CREATED : HttpStatus.OK)
+                .body(result.policy());
     }
 }

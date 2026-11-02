@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="保险购买流程演示控制台">
+    <title>安行保险购买控制台</title>
+    <link rel="stylesheet" href="/css/insurance-console.css">
+</head>
+<body>
+<header class="utility-bar">
+    <label class="language-control">
+        <span class="sr-only">语言</span>
+        <select aria-label="语言">
+            <option>中文（简体）</option>
+        </select>
+    </label>
+    <nav aria-label="辅助导航">
+        <button class="link-button" type="button" data-go-step="1">产品</button>
+        <button class="link-button" type="button" id="order-nav">投保单</button>
+        <a href="#help">帮助</a>
+    </nav>
+</header>
+
+<main class="console-shell">
+    <section class="console-window" aria-labelledby="page-title">
+        <div class="window-titlebar">
+            <div>
+                <p class="window-kicker">INSURANCE PURCHASE TERMINAL</p>
+                <h1 id="page-title">安行保险购买控制台</h1>
+            </div>
+            <span class="environment-badge">DEMO / H2</span>
+        </div>
+
+        <div class="status-ribbon" aria-live="polite">
+            <span class="status-lamp" id="status-lamp"></span>
+            <strong>当前状态：</strong>
+            <span id="status-text">正在连接保险产品服务…</span>
+            <span class="status-time" id="status-time"></span>
+        </div>
+
+        <div class="console-body">
+            <aside class="step-rail" aria-label="购买进度">
+                <p class="rail-label">购买流程</p>
+                <ol>
+                    <li class="is-active" data-step-item="1">
+                        <span>01</span>
+                        <button type="button" data-go-step="1">选择产品</button>
+                    </li>
+                    <li data-step-item="2">
+                        <span>02</span>
+                        <button type="button" data-go-step="2">填写信息</button>
+                    </li>
+                    <li data-step-item="3">
+                        <span>03</span>
+                        <button type="button" data-go-step="3">确认支付</button>
+                    </li>
+                    <li data-step-item="4">
+                        <span>04</span>
+                        <button type="button" data-go-step="4">查看保单</button>
+                    </li>
+                </ol>
+
+                <div class="rail-note" id="help">
+                    <strong>演示说明</strong>
+                    <p>支付为本地模拟，不会产生真实扣款。应用重启后订单数据会清空。</p>
+                </div>
+            </aside>
+
+            <div class="workspace">
+                <div id="alert" class="alert" role="alert" hidden></div>
+
+                <section class="step-panel is-visible" data-step-panel="1" aria-labelledby="product-heading">
+                    <div class="section-heading">
+                        <div>
+                            <span class="section-index">步骤 1 / 4</span>
+                            <h2 id="product-heading">选择保障方案</h2>
+                        </div>
+                        <p>请选择一款旅行意外险。保费为一次性支付。</p>
+                    </div>
+                    <div id="product-list" class="product-list" aria-live="polite">
+                        <div class="loading-row">正在读取产品数据…</div>
+                    </div>
+                    <div class="action-bar">
+                        <span class="action-hint">选择后可继续填写投保信息</span>
+                        <button class="button button-primary" type="button" id="continue-to-form" disabled>填写投保信息 →</button>
+                    </div>
+                </section>
+
+                <section class="step-panel" data-step-panel="2" aria-labelledby="form-heading">
+                    <div class="section-heading">
+                        <div>
+                            <span class="section-index">步骤 2 / 4</span>
+                            <h2 id="form-heading">填写投保资料</h2>
+                        </div>
+                        <p>带星号的字段必须填写。身份证信息不会显示在订单响应中。</p>
+                    </div>
+
+                    <form id="purchase-form" novalidate>
+                        <fieldset>
+                            <legend>投保人</legend>
+                            <div class="form-grid">
+                                <label>姓名 <span aria-hidden="true">*</span>
+                                    <input name="applicantName" maxlength="50" autocomplete="name" required>
+                                </label>
+                                <label>手机号码 <span aria-hidden="true">*</span>
+                                    <input name="applicantPhone" inputmode="numeric" autocomplete="tel" pattern="1[3-9][0-9]{9}" placeholder="11 位手机号" required>
+                                </label>
+                                <label class="wide-field">身份证号码 <span aria-hidden="true">*</span>
+                                    <input name="applicantIdCard" maxlength="18" autocomplete="off" pattern="[0-9]{17}[0-9Xx]" placeholder="18 位身份证号" required>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>被保险人</legend>
+                            <div class="form-grid">
+                                <label>姓名 <span aria-hidden="true">*</span>
+                                    <input name="insuredName" maxlength="50" required>
+                                </label>
+                                <label>与投保人关系 <span aria-hidden="true">*</span>
+                                    <select name="relationship" required>
+                                        <option value="">请选择</option>
+                                        <option value="SELF">本人</option>
+                                        <option value="SPOUSE">配偶</option>
+                                        <option value="PARENT">父母</option>
+                                        <option value="CHILD">子女</option>
+                                    </select>
+                                </label>
+                                <label class="wide-field">身份证号码 <span aria-hidden="true">*</span>
+                                    <input name="insuredIdCard" maxlength="18" pattern="[0-9]{17}[0-9Xx]" placeholder="18 位身份证号" required>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <div class="action-bar">
+                            <button class="button" type="button" data-go-step="1">← 返回选择产品</button>
+                            <button class="button button-primary" type="submit">生成投保单 →</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="step-panel" data-step-panel="3" aria-labelledby="payment-heading">
+                    <div class="section-heading">
+                        <div>
+                            <span class="section-index">步骤 3 / 4</span>
+                            <h2 id="payment-heading">确认并模拟支付</h2>
+                        </div>
+                        <p>请核对订单。此操作仅改变 Demo 订单状态，不会真实扣款。</p>
+                    </div>
+                    <div id="order-receipt" class="data-sheet"></div>
+                    <label class="confirmation-check">
+                        <input type="checkbox" id="payment-confirmation">
+                        <span>我已核对投保信息，并确认进行模拟支付</span>
+                    </label>
+                    <div class="action-bar">
+                        <button class="button" type="button" data-go-step="2">← 返回修改</button>
+                        <button class="button button-primary" type="button" id="pay-button" disabled>模拟支付并生成保单</button>
+                    </div>
+                </section>
+
+                <section class="step-panel" data-step-panel="4" aria-labelledby="policy-heading">
+                    <div class="section-heading completion-heading">
+                        <div>
+                            <span class="section-index">流程完成</span>
+                            <h2 id="policy-heading">保单已生成</h2>
+                        </div>
+                        <span class="success-stamp">PAID</span>
+                    </div>
+                    <div id="policy-receipt" class="data-sheet policy-sheet"></div>
+                    <div class="action-bar">
+                        <span class="action-hint">请保存保单号，以便后续查询。</span>
+                        <button class="button button-primary" type="button" id="new-purchase">购买另一份保险</button>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="summary-panel" aria-label="当前选择">
+                <div class="summary-title">当前选择</div>
+                <div id="summary-content" class="summary-empty">
+                    <span>尚未选择产品</span>
+                    <small>请从产品列表中选择一项</small>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <span>InsuranceAPI Demo Console</span>
+    <span>本页面仅用于学习与功能演示</span>
+</footer>
+
+<script src="/js/insurance-console.js" defer></script>
+</body>
+</html>
